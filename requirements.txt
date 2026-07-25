@@ -1,0 +1,18 @@
+# Install a torch/torchvision pair compatible with your CUDA toolkit first.
+torch>=2.1
+torchvision>=0.16
+
+addict
+av>=10
+einops>=0.6
+future
+lmdb
+numpy>=1.21,<2.0
+opencv-python>=4.6
+Pillow
+PyYAML
+requests
+scikit-image>=0.19
+scipy
+tensorboard
+tqdm

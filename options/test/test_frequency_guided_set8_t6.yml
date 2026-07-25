@@ -1,0 +1,72 @@
+name: frequency_guided_set8_t6
+model_type: FrequencyGuidedLongVideoModel
+scale: 1
+num_gpu: 1
+manual_seed: 0
+
+datasets:
+  test:
+    name: Set8_T6
+    type: PairedVideoRecurrentTestDataset
+    dataroot_lq: datasets/Set8/T6/blur
+    dataroot_gt: datasets/Set8/GT
+    cache_data: false
+    io_backend:
+      type: disk
+    num_frame: -1
+
+network_g:
+  type: FrequencyGuidedMultiRangeRestorationNet
+  mid_channels: 96
+  num_extract_blocks: 5
+  num_propagation_blocks: 7
+  max_residue_magnitude: 10
+  motion_estimator_pretrained: experiments/pretrained_models/spynet_sintel_final.pth
+  freeze_motion_estimator: true
+  deform_groups: 24
+  use_high_frequency_prompt: true
+  use_temporal_routing: true
+  use_checkpoint: false
+  routing_num_heads: 1
+  routing_cache_horizon: 9
+  routing_layer_offsets:
+    - [1, 2, 3, 4]
+    - [5, 6, 7, 8]
+  routing_layer_window_size: [2, 2]
+  routing_layer_topk: [5, 5]
+  routing_layer_use_residual_selection: [true, true]
+  routing_layer_residual_topm: [3, 2]
+  routing_layer_normalize_residual: [true, true]
+  routing_detach_selection: true
+  routing_layer_local_radius: [5, 0]
+  routing_layer_use_local: [true, false]
+  routing_ffn_expansion: 1.0
+  routing_intermediate_fusion_blocks: 1
+  routing_final_fusion_blocks: 2
+  routing_channel_reduction: 16
+
+path:
+  pretrain_network_g: experiments/pretrained_models/frequency_guided_restoration.pth
+  strict_load_g: true
+
+val:
+  save_img: true
+  suffix: ~
+  tile:
+    use_temporal_chunk: true
+    max_frames: 60
+    temporal_pad: 6
+    use_tile: true
+    tile_size: 256
+    tile_pad: 32
+    minimum_size: 64
+    size_multiple: 4
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false

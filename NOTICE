@@ -1,0 +1,22 @@
+FrequencyGuidedRestoration
+Copyright 2026 FrequencyGuidedRestoration contributors
+
+This product includes software from BasicSR 1.4.2:
+https://github.com/XPixelGroup/BasicSR
+BasicSR is licensed under the Apache License, Version 2.0.
+Additional notices and license texts retained from BasicSR are in
+third_party_licenses/.
+
+The bundled SPyNet checkpoint was distributed through the BasicSR model
+download list as "spynet_sintel_final-3d2a1287.pth". Its SHA-256 digest is:
+3d2a1287666aa71752ebaedc06999212886ef476f77d691a1b0006107088e714
+Pretrained weights may be subject to terms separate from this repository's
+source-code license. Confirm those terms before redistribution.
+
+The custom research implementation was developed in a local training tree that
+used AverNet as a scaffold. The local AverNet snapshot did not contain an
+explicit repository license. The Apache-2.0 license in this repository therefore
+must not be interpreted as granting rights to third-party AverNet code. Before
+public release, the maintainer must confirm that every custom architecture and
+reconstruction implementation is original, owned by the maintainer, or covered
+by separate written permission.
