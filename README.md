@@ -143,18 +143,6 @@ official BasicSR 1.4.2 distribution.
 
 ## Before publishing
 
-The local AverNet snapshot used during research did not contain a repository
-license. Do not assume that moving files into an Apache-2.0 BasicSR scaffold
-changes their copyright status. Before making this repository public:
-
-- confirm that the custom architecture/reconstruction code is authored and
-  owned by you, or obtain written permission for any copied implementation;
-- replace `<YOUR_GITHUB_REPOSITORY_URL>` and add the paper/authors/citation;
-- publish or link the generator checkpoint and verify its redistribution terms;
-- confirm the intended FROTH directory names, because no FROTH option existed
-  in the supplied AverNet tree;
-- run the full CUDA training/evaluation smoke test in the project environment.
-
 See [`NOTICE`](NOTICE) for attribution and pretrained-weight notes.
 
 ## License and acknowledgement
