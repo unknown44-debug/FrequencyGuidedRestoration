@@ -60,6 +60,11 @@ python scripts/data_preparation/generate_video_meta_info.py \
   --output-path datasets/DAVIS/meta_info_DAVIS_train.txt
 ```
 
+test dataset
+https://drive.google.com/drive/folders/1-3i3Gm48APnQ3tsNs9ANj9OiApBHTRgH?usp=sharing
+train dataset
+https://pan.baidu.com/s/15xR24T1-ktnJQYl6PQy-Tw?pwd=xk27
+
 ## Training
 
 Edit dataset paths if necessary, then run:
