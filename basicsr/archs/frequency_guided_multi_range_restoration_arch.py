@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-"""Frequency-guided multi-range video restoration architecture.
-
-The implementation is organized according to the paper methodology:
-
-1. Global-High-frequency Prompt Interaction (GHPI)
-2. Frequency-guided Second-order Propagation (FGSP)
-3. Bidirectional Multi-Range Temporal Routing (BMTR)
-4. Progressive gated reconstruction
-
-The file contains the complete final architecture and no longer depends on a
-separate prompt/alignment architecture file.
-"""
-
 from __future__ import annotations
 
 import math
@@ -2726,13 +2712,4 @@ class FrequencyGuidedMultiRangeRestorationNet(nn.Module):
         else:
             out = self.reconstruction(hist_feats, lqs)
         out = out[:, :, :, :h, :w]
-
-        if self.training:
-            with torch.no_grad():
-                self.latest_aux = {
-                    'prop_abs_mean': prop_feats.abs().mean().detach(),
-                    'routed_abs_mean': hist_feats.abs().mean().detach(),
-                    'backward_abs_mean': feats_backward.abs().mean().detach(),
-                    'forward_abs_mean': feats_forward.abs().mean().detach(),
-                }
         return out
