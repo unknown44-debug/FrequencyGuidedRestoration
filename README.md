@@ -60,8 +60,9 @@ python scripts/data_preparation/generate_video_meta_info.py \
   --output-path datasets/DAVIS/meta_info_DAVIS_train.txt
 ```
 Or Download the dataset from：
+[test dataset]([https://markdown.com.cn](https://drive.google.com/drive/folders/1-3i3Gm48APnQ3tsNs9ANj9OiApBHTRgH?usp=sharing
+) "Davis&Set-8")
 
-test dataset
 https://drive.google.com/drive/folders/1-3i3Gm48APnQ3tsNs9ANj9OiApBHTRgH?usp=sharing
 
 train dataset
