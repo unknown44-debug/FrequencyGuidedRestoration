@@ -145,9 +145,7 @@ FrequencyGuidedRestoration/
 BasicSR framework files used by training and evaluation remain based on the
 official BasicSR 1.4.2 distribution.
 
-## Before publishing
 
-See [`NOTICE`](NOTICE) for attribution and pretrained-weight notes.
 
 ## License and acknowledgement
 
