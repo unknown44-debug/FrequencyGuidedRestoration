@@ -106,16 +106,6 @@ python scripts/metrics/calculate_video_metrics.py \
   --output-csv results/set8_metrics.csv
 ```
 
-## Checkpoint migration
-
-The generator translates the module names used by the earlier
-`FSPMResidualHardSparseHistoryBSSTNet` checkpoint (`spynet`,
-prompt/alignment, sparse-history, router) when `load_state_dict` is called. The
-public architecture keeps the trained `32/128`-channel reconstruction layout:
-under equivalent options, all 474 state tensors map one-to-one and the migrated
-network produces the same smoke-test output. `strict_load_g: true` remains
-enabled so a genuinely incompatible checkpoint is reported rather than partly
-loaded.
 
 ## Repository layout
 
