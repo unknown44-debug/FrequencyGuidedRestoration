@@ -59,7 +59,7 @@ python scripts/data_preparation/generate_video_meta_info.py \
   --dataset-path datasets/DAVIS/train/GT \
   --output-path datasets/DAVIS/meta_info_DAVIS_train.txt
 ```
-
+Or Download the dataset from：
 test dataset
 https://drive.google.com/drive/folders/1-3i3Gm48APnQ3tsNs9ANj9OiApBHTRgH?usp=sharing
 
