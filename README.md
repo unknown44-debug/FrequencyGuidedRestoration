@@ -80,11 +80,6 @@ torchrun --nproc_per_node=NUM_GPUS basicsr/train.py \
   --launcher pytorch
 ```
 
-The training configuration retains the main settings from
-`train_FSPMResidualHardSparseHistoryBSSTNet.yml`: 15-frame samples, 96 feature
-channels, 5 extraction blocks, 7 propagation blocks, two sparse-history routing
-layers, Adam, cosine restart scheduling, EMA, and a Charbonnier loss. Obsolete
-experimental option names were translated to the public class API.
 
 ## Evaluation
 
