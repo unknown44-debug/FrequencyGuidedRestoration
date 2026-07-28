@@ -80,10 +80,6 @@ torchrun --nproc_per_node=NUM_GPUS basicsr/train.py \
   --launcher pytorch
 ```
 
-## Visualization
-
-![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/Davis%26set-8.jpg)
-
 ## Evaluation
 
 Place the generator checkpoint at
@@ -109,6 +105,9 @@ python scripts/metrics/calculate_video_metrics.py \
   --output-csv results/set8_metrics.csv
 ```
 
+## Visualization
+
+![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/Davis%26set-8.jpg)
 
 ## Repository layout
 
