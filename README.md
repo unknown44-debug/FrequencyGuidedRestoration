@@ -63,6 +63,8 @@ Or Download the dataset from：
 [test dataset](https://drive.google.com/drive/folders/1-3i3Gm48APnQ3tsNs9ANj9OiApBHTRgH?usp=sharing "Davis&Set-8") and 
 [train dataset](https://pan.baidu.com/s/15xR24T1-ktnJQYl6PQy-Tw?pwd=xk27 "Davis2017")
 
+Download the pretrained weights from：[pretrained weights](https://pan.baidu.com/s/15xR24T1-ktnJQYl6PQy-Tw?pwd=xk27 "trained on Davis2017")
+
 ## Training
 
 Edit dataset paths if necessary, then run:
