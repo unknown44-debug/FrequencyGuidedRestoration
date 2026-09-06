@@ -2,7 +2,7 @@
 
 Frequency-guided multi-range video restoration built on
 [BasicSR](https://github.com/XPixelGroup/BasicSR). The repository contains the
-final network in one architecture file, paired recurrent video datasets,
+final network, paired recurrent video datasets,
 memory-bounded long-video inference, DAVIS/TUD training options, DAVIS/Set8/FROTH
 test options, data synthesis, and PSNR/SSIM evaluation.
 
