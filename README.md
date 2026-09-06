@@ -141,6 +141,58 @@ official BasicSR 1.4.2 distribution.
 The repository license is Apache-2.0. This applies only to material for which
 the repository owner has the right to grant that license.
 
-The framework is based on BasicSR. Please cite BasicSR and the original SPyNet
-work when using their implementation/checkpoint. Add the FrequencyGuidedRestoration
-paper citation here before release.
+This project is built on [BasicSR](https://github.com/XPixelGroup/BasicSR) and
+uses [SPyNet](https://spynet.is.tue.mpg.de/) for optical-flow estimation. We
+thank the authors for making their code and models available.
+
+The design of this work was inspired by
+[AverNet](https://github.com/XLearning-SCU/2024-NeurIPS-AverNet),
+[AdaIR](https://github.com/c-yn/AdaIR), and the grouped spatial-temporal shift
+design in [Shift-Net (GShift)](https://github.com/dasongli1/Shift-Net).
+
+Please cite the related works when using this repository:
+
+```bibtex
+@misc{basicsr,
+  author       = {Xintao Wang and Liangbin Xie and Ke Yu and Kelvin C. K. Chan
+                  and Chen Change Loy and Chao Dong},
+  title        = {{BasicSR}: Open Source Image and Video Restoration Toolbox},
+  howpublished = {\url{https://github.com/XPixelGroup/BasicSR}},
+  year         = {2022}
+}
+
+@inproceedings{ranjan2017spynet,
+  author    = {Anurag Ranjan and Michael J. Black},
+  title     = {Optical Flow Estimation Using a Spatial Pyramid Network},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  year      = {2017},
+  pages     = {4161--4170}
+}
+
+@inproceedings{zhao2024avernet,
+  author    = {Haiyu Zhao and Lei Tian and Xinyan Xiao and Peng Hu and Yuanbiao Gou and Xi Peng},
+  title     = {{AverNet}: All-in-one Video Restoration for Time-varying Unknown Degradations},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {37},
+  year      = {2024}
+}
+
+@inproceedings{cui2025adair,
+  author    = {Yuning Cui and Syed Waqas Zamir and Salman Khan and Alois Knoll
+               and Mubarak Shah and Fahad Shahbaz Khan},
+  title     = {{AdaIR}: Adaptive All-in-One Image Restoration via Frequency Mining and Modulation},
+  booktitle = {The Thirteenth International Conference on Learning Representations},
+  year      = {2025}
+}
+
+@inproceedings{li2023shift,
+  author    = {Dasong Li and Xiaoyu Shi and Yi Zhang and Ka Chun Cheung and
+               Simon See and Xiaogang Wang and Hongwei Qin and Hongsheng Li},
+  title     = {A Simple Baseline for Video Restoration With Grouped Spatial-Temporal Shift},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year      = {2023},
+  pages     = {9822--9832}
+}
+```
+
+Add the FrequencyGuidedRestoration paper citation here before release.
