@@ -117,12 +117,23 @@ python scripts/metrics/calculate_video_metrics.py \
 ```text
 FrequencyGuidedRestoration/
 ├── basicsr/
-│   ├── archs/frequency_guided_multi_range_restoration_arch.py
+│   ├── archs/
+│   │   ├── frequency_guided_multi_range_restoration_arch.py
+│   │   └── gshift_arch.py
 │   ├── models/
 │   │   ├── frequency_guided_video_restoration_model.py
 │   │   └── frequency_guided_long_video_model.py
 │   └── data/paired_video_restoration_dataset.py
-├── options/{train,test}/
+├── options/
+│   ├── train/
+│   │   ├── train_frequency_guided_davis_tud.yml
+│   │   └── train_frequency_guided_gopro.yml
+│   └── test/
+│       ├── test_frequency_guided_davis_t6.yml
+│       ├── test_frequency_guided_set8_t6.yml
+│       ├── test_frequency_guided_froth.yml
+│       ├── test_frequency_guided_gopro.yml
+│       └── test_frequency_guided_dvd.yml
 ├── scripts/{data_preparation,metrics}/
 ├── datasets/README.md
 ├── experiments/pretrained_models/
@@ -194,4 +205,3 @@ Please cite the related works when using this repository:
   pages     = {9822--9832}
 }
 ```
-
