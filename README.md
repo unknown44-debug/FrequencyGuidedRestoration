@@ -110,7 +110,7 @@ python scripts/metrics/calculate_video_metrics.py \
 
 ## Visualization
 
-![Davis&set-8]([https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/Davis%26set-8.jpg](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/github.png))
+![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/github.png)
 
 ## Repository layout
 
