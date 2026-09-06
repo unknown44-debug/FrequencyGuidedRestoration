@@ -195,4 +195,3 @@ Please cite the related works when using this repository:
 }
 ```
 
-Add the FrequencyGuidedRestoration paper citation here before release.
