@@ -16,6 +16,13 @@ except ImportError as exc:  # pragma: no cover
     raise ImportError('This architecture requires einops. Please install einops.') from exc
 
 from basicsr.archs.arch_util import ResidualBlockNoBN, flow_warp, make_layer
+from basicsr.archs.gshift_arch import (
+    CAB,
+    Encoder_shift_block,
+    PixelShufflePack,
+    SkipUpSample,
+    conv,
+)
 from basicsr.archs.spynet_arch import SpyNet as MotionEstimator
 from basicsr.utils.registry import ARCH_REGISTRY
 from torchvision.ops import deform_conv2d
@@ -131,380 +138,6 @@ class ResidualBlocksWithInputConv(nn.Module):
 
     def forward(self, feature: torch.Tensor) -> torch.Tensor:
         return self.main(feature)
-
-
-def reconstruction_conv(
-    in_channels: int,
-    out_channels: int,
-    kernel_size: int,
-    bias: bool = False,
-    stride: int = 1,
-) -> nn.Conv2d:
-    """Convolution used by the progressive reconstruction head."""
-    return nn.Conv2d(
-        in_channels,
-        out_channels,
-        kernel_size,
-        stride=stride,
-        padding=kernel_size // 2,
-        bias=bias,
-    )
-
-
-class _ReconstructionChannelAttention(nn.Module):
-    """Channel attention retained for legacy reconstruction checkpoints."""
-
-    def __init__(self, channels: int, bias: bool = False) -> None:
-        super().__init__()
-        # The experimental reconstruction used no bottleneck in this block.
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.conv_du = nn.Sequential(
-            nn.Conv2d(channels, channels, 1, bias=bias),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(channels, channels, 1, bias=bias),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x * self.conv_du(self.avg_pool(x))
-
-
-class ReconstructionChannelBlock(nn.Module):
-    """Two-convolution residual channel-attention block."""
-
-    def __init__(
-        self,
-        n_feat: int,
-        kernel_size: int,
-        reduction: int,
-        bias: bool,
-        act: nn.Module,
-    ) -> None:
-        super().__init__()
-        del reduction
-        self.body = nn.Sequential(
-            reconstruction_conv(n_feat, n_feat, kernel_size, bias=bias),
-            act,
-            reconstruction_conv(n_feat, n_feat, kernel_size, bias=bias),
-        )
-        self.CA = _ReconstructionChannelAttention(n_feat, bias=bias)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x + self.CA(self.body(x))
-
-
-class ReconstructionUpsampler(nn.Module):
-    """Convolution followed by pixel shuffle."""
-
-    def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        scale_factor: int,
-        upsample_kernel: int,
-    ) -> None:
-        super().__init__()
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.scale_factor = scale_factor
-        self.upsample_kernel = upsample_kernel
-        self.upsample_conv = nn.Conv2d(
-            in_channels,
-            out_channels * scale_factor * scale_factor,
-            upsample_kernel,
-            padding=(upsample_kernel - 1) // 2,
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return F.pixel_shuffle(self.upsample_conv(x), self.scale_factor)
-
-
-class SkipGuidedUpsampler(nn.Module):
-    """Bilinear 2x upsampling followed by a projected skip addition."""
-
-    def __init__(self, in_channels: int, s_factor: int) -> None:
-        super().__init__()
-        self.up = nn.Sequential(
-            nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False),
-            nn.Conv2d(
-                in_channels + s_factor,
-                in_channels,
-                1,
-                stride=1,
-                padding=0,
-                bias=False,
-            ),
-        )
-
-    def forward(self, x: torch.Tensor, skip: torch.Tensor) -> torch.Tensor:
-        x = self.up(x)
-        if x.shape[-2:] != skip.shape[-2:]:
-            x = F.interpolate(
-                x,
-                size=skip.shape[-2:],
-                mode='bilinear',
-                align_corners=False,
-            )
-        return x + skip
-
-
-class _ReconstructionLayerNorm2d(nn.Module):
-    """Per-pixel channel normalization with legacy parameter names."""
-
-    def __init__(self, channels: int, eps: float = 1e-6) -> None:
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(channels))
-        self.bias = nn.Parameter(torch.zeros(channels))
-        self.eps = eps
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        mean = x.mean(dim=1, keepdim=True)
-        variance = (x - mean).square().mean(dim=1, keepdim=True)
-        x = (x - mean) * torch.rsqrt(variance + self.eps)
-        return (
-            x * self.weight.view(1, -1, 1, 1)
-            + self.bias.view(1, -1, 1, 1)
-        )
-
-
-class _DepthwiseRepConv(nn.Module):
-    def __init__(self, channels: int, kernel_size: int, bias: bool) -> None:
-        super().__init__()
-        self.conv_1 = nn.Conv2d(
-            channels,
-            channels,
-            kernel_size,
-            padding=kernel_size // 2,
-            groups=channels,
-            bias=bias,
-        )
-        self.conv_2 = nn.Conv2d(
-            channels,
-            channels,
-            3,
-            padding=1,
-            groups=channels,
-            bias=bias,
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.conv_1(x) + self.conv_2(x) + x
-
-
-class _DepthwiseResidualConv(nn.Module):
-    def __init__(self, channels: int, bias: bool) -> None:
-        super().__init__()
-        self.conv_2 = nn.Conv2d(
-            channels,
-            channels,
-            3,
-            padding=1,
-            groups=channels,
-            bias=bias,
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.conv_2(x) + x
-
-
-class _SimpleGate(nn.Module):
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x1, x2 = x.chunk(2, dim=1)
-        return x1 * x2
-
-
-class _SigmoidGate(nn.Module):
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x1, x2 = x.chunk(2, dim=1)
-        return x1 * torch.sigmoid(x2)
-
-
-class _ShiftChannelBlock(nn.Module):
-    """Channel block used after spatial-temporal feature shifting."""
-
-    def __init__(
-        self,
-        n_feat: int,
-        kernel_size: int,
-        bias: bool,
-        add_channel: int,
-    ) -> None:
-        super().__init__()
-        self.n_feat = n_feat
-        self.add_channel = add_channel
-        self.conv1 = nn.Conv2d(
-            add_channel,
-            add_channel,
-            3,
-            padding=1,
-            groups=add_channel,
-            bias=bias,
-        )
-        self.norm = _ReconstructionLayerNorm2d(n_feat + add_channel)
-        self.body = nn.Sequential(
-            reconstruction_conv(
-                n_feat + add_channel, 2 * n_feat, 1, bias=bias
-            ),
-            _DepthwiseResidualConv(2 * n_feat, bias),
-            _SimpleGate(),
-            _DepthwiseRepConv(n_feat, kernel_size, bias),
-            reconstruction_conv(n_feat, 2 * n_feat, 1, bias=bias),
-            _SigmoidGate(),
-            _ReconstructionChannelAttention(n_feat, bias=bias),
-            reconstruction_conv(n_feat, n_feat, 1, bias=bias),
-        )
-        self.beta = nn.Parameter(torch.zeros(1, n_feat, 1, 1))
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        shortcut, shifted = x[:, :self.n_feat], x[:, self.n_feat:]
-        shifted = self.conv1(shifted)
-        residual = self.body(
-            self.norm(torch.cat([shortcut, shifted], dim=1))
-        )
-        return shortcut + residual * self.beta
-
-
-class _PostShiftChannelBlock(nn.Module):
-    def __init__(self, n_feat: int, kernel_size: int, bias: bool) -> None:
-        super().__init__()
-        self.norm = _ReconstructionLayerNorm2d(n_feat)
-        self.body = nn.Sequential(
-            reconstruction_conv(n_feat, 2 * n_feat, 1, bias=bias),
-            _DepthwiseResidualConv(2 * n_feat, bias),
-            _SimpleGate(),
-            _DepthwiseRepConv(n_feat, kernel_size, bias),
-            reconstruction_conv(n_feat, 2 * n_feat, 1, bias=bias),
-            _SigmoidGate(),
-            _ReconstructionChannelAttention(n_feat, bias=bias),
-            reconstruction_conv(n_feat, n_feat, 1, bias=bias),
-        )
-        self.beta = nn.Parameter(torch.zeros(1, n_feat, 1, 1))
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x + self.body(self.norm(x)) * self.beta
-
-
-class TemporalShiftReconstructionBlock(nn.Module):
-    """Four-stage temporal/channel shift reconstruction block.
-
-    The first tensor dimension represents time when this block is called by the
-    reconstruction head. The implementation keeps the parameter layout of the
-    earlier experimental block so existing checkpoints remain loadable.
-    """
-
-    _SHIFT_OFFSETS = (
-        (8, 8), (8, 4), (8, 0), (8, -4), (8, -8),
-        (-8, 8), (-8, 4), (-8, 0), (-8, -4), (-8, -8),
-        (4, 8), (4, -8), (0, 8), (0, -8), (-4, 8), (-4, -8),
-        (4, 4), (4, 0), (4, -4), (0, 4), (0, -4),
-        (-4, 4), (-4, 0), (-4, -4),
-    )
-
-    def __init__(
-        self,
-        n_features: int,
-        kernel_size: int,
-        reduction: int,
-        bias: bool = False,
-        scale_unetfeats: int = 48,
-    ) -> None:
-        super().__init__()
-        del reduction, scale_unetfeats
-        self.number = n_features // 16
-        if self.number < 1:
-            raise ValueError('Temporal shift reconstruction needs at least 16 channels.')
-        shifted_channels = 8 * self.number
-
-        def make_stage() -> nn.Sequential:
-            return nn.Sequential(
-                _ShiftChannelBlock(
-                    n_features,
-                    kernel_size=5,
-                    bias=bias,
-                    add_channel=shifted_channels,
-                ),
-                _PostShiftChannelBlock(
-                    n_features,
-                    kernel_size=5,
-                    bias=bias,
-                ),
-            )
-
-        self.encoder_level1 = make_stage()
-        self.encoder_level1_1 = make_stage()
-        self.encoder_level1_2 = make_stage()
-        self.encoder_level1_3 = make_stage()
-
-    @staticmethod
-    def _translate_without_wrap(
-        x: torch.Tensor,
-        dy: int,
-        dx: int,
-    ) -> torch.Tensor:
-        out = torch.zeros_like(x)
-        h, w = x.shape[-2:]
-        if abs(dy) >= h or abs(dx) >= w:
-            return out
-        src_y0 = max(-dy, 0)
-        src_y1 = h - max(dy, 0)
-        src_x0 = max(-dx, 0)
-        src_x1 = w - max(dx, 0)
-        dst_y0 = max(dy, 0)
-        dst_y1 = h - max(-dy, 0)
-        dst_x0 = max(dx, 0)
-        dst_x1 = w - max(-dx, 0)
-        out[:, :, dst_y0:dst_y1, dst_x0:dst_x1] = x[
-            :, :, src_y0:src_y1, src_x0:src_x1
-        ]
-        return out
-
-    def _spatial_shift(self, x: torch.Tensor) -> torch.Tensor:
-        n2 = (self.number - 1) // 2
-        n1 = self.number - 2 * n2
-        widths = [n2] * 16 + [n1] * 8
-        parts: List[torch.Tensor] = []
-        start = 0
-        for width, (dy, dx) in zip(widths, self._SHIFT_OFFSETS):
-            end = start + width
-            if width:
-                parts.append(
-                    self._translate_without_wrap(x[:, start:end], dy, dx)
-                )
-            start = end
-        if start != x.size(1):
-            raise RuntimeError(
-                f'Shift channel partition covers {start} of {x.size(1)} channels.'
-            )
-        return torch.cat(parts, dim=1)
-
-    def _channel_shift(
-        self,
-        x: torch.Tensor,
-        reverse: bool = False,
-    ) -> torch.Tensor:
-        b, c, h, w = x.shape
-        shift = c // 2
-        if reverse:
-            shift = -shift
-        mixed = torch.roll(x.reshape(1, b * c, h, w), shift, 1)
-        mixed = mixed.reshape(b, c, h, w)
-        shifted = (
-            mixed[:, -8 * self.number:]
-            if reverse
-            else mixed[:, :8 * self.number]
-        )
-        return torch.cat([mixed, self._spatial_shift(shifted)], dim=1)
-
-    def forward(
-        self,
-        x: torch.Tensor,
-        reverse: int = 0,
-    ) -> torch.Tensor:
-        del reverse
-        x = self.encoder_level1(self._channel_shift(x))
-        x = self.encoder_level1_1(self._channel_shift(x, reverse=True))
-        x = self.encoder_level1_2(self._channel_shift(x))
-        return self.encoder_level1_3(self._channel_shift(x, reverse=True))
 
 
 def initialize_constant(module: nn.Module, val: float, bias: float = 0.0) -> None:
@@ -1376,7 +1009,7 @@ class ProgressiveGatedReconstructionHead(nn.Module):
         if trans_channels <= n_feat:
             raise ValueError(
                 f'trans_channels={trans_channels} must be larger than n_feat={n_feat} '
-                'because SkipGuidedUpsampler expects in_channels + s_factor.'
+                'because SkipUpSample expects in_channels + s_factor.'
             )
 
         self.in_channels = int(in_channels)
@@ -1389,28 +1022,28 @@ class ProgressiveGatedReconstructionHead(nn.Module):
         self.concat = nn.Sequential(
             nn.Conv2d(3, self.n_feat, kernel_size, 1, kernel_size // 2, bias=bias),
             self.act,
-            ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act),
+            CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act),
         )
         self.down01 = nn.Sequential(
             nn.Conv2d(self.n_feat, self.n_feat, kernel_size, 2, kernel_size // 2, bias=bias),
             self.act,
         )
-        self.encoder_level1 = ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
-        self.encoder_level1_1 = ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
+        self.encoder_level1 = CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
+        self.encoder_level1_1 = CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
 
         # Project propagated/history features to the the compact backbone transformer/reconstruction width.
         self.feat_to_trans = nn.Conv2d(self.in_channels, self.trans_channels, 3, 1, 1, bias=bias)
 
         # the compact backbone reconstruction modules.
-        self.skip_attn1 = ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
-        self.up21 = SkipGuidedUpsampler(self.n_feat, self.scale_unetfeats)
-        self.decoder_level1 = TemporalShiftReconstructionBlock(self.n_feat, kernel_size, reduction, bias)
-        self.decoder_level1_1 = TemporalShiftReconstructionBlock(self.n_feat, kernel_size, reduction, bias)
-        self.upsample0 = ReconstructionUpsampler(self.n_feat, self.n_feat, 2, upsample_kernel=3)
-        self.skip_conv = ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
-        self.conv_hr0 = reconstruction_conv(self.n_feat, self.n_feat, kernel_size, bias=bias)
-        self.out_conv = ReconstructionChannelBlock(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
-        self.last_conv = reconstruction_conv(self.n_feat, 3, kernel_size, bias=bias)
+        self.skip_attn1 = CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
+        self.up21 = SkipUpSample(self.n_feat, self.scale_unetfeats)
+        self.decoder_level1 = Encoder_shift_block(self.n_feat, kernel_size, reduction, bias)
+        self.decoder_level1_1 = Encoder_shift_block(self.n_feat, kernel_size, reduction, bias)
+        self.upsample0 = PixelShufflePack(self.n_feat, self.n_feat, 2, upsample_kernel=3)
+        self.skip_conv = CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
+        self.conv_hr0 = conv(self.n_feat, self.n_feat, kernel_size, bias=bias)
+        self.out_conv = CAB(self.n_feat, kernel_size, reduction, bias=bias, act=self.act)
+        self.last_conv = conv(self.n_feat, 3, kernel_size, bias=bias)
 
     def _forward_one_sequence(self, feat_seq: torch.Tensor, lq_seq: torch.Tensor) -> torch.Tensor:
         """Process one video sequence.
