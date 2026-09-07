@@ -112,6 +112,12 @@ python scripts/metrics/calculate_video_metrics.py \
 
 ![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/github.png)
 
+### GoPro-TUD (T6) video deblurring
+
+Degraded input (left) and our restored result (right):
+
+![GoPro-TUD T6 video deblurring comparison](Visualization/gopro_tud_t6_comparison.gif)
+
 ## Repository layout
 
 ```text
