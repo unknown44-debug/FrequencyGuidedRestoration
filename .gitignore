@@ -22,6 +22,7 @@ version.py
 *.jpg
 *.gif
 !Visualization/gopro_tud_t6_comparison.gif
+!Visualization/dvd_t6_comparison.gif
 *.pth
 *.zip
 

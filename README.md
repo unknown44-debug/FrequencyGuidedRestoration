@@ -118,6 +118,12 @@ Degraded input (left) and our restored result (right):
 
 ![GoPro-TUD T6 video deblurring comparison](Visualization/gopro_tud_t6_comparison.gif)
 
+### DVD-T6 video deblurring
+
+Degraded input (left) and our restored result (right):
+
+![DVD-T6 video deblurring comparison](Visualization/dvd_t6_comparison.gif)
+
 ## Repository layout
 
 ```text
