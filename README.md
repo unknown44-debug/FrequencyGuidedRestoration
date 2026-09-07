@@ -6,6 +6,20 @@ final network, paired recurrent video datasets,
 memory-bounded long-video inference, DAVIS/TUD training options, DAVIS/Set8/FROTH
 test options, data synthesis, and PSNR/SSIM evaluation.
 
+## Visual Results
+
+### GoPro-TUD (T6) video deblurring
+
+Degraded input (left) and our restored result (right):
+
+![GoPro-TUD T6 video deblurring comparison](Visualization/gopro_tud_t6_comparison.gif)
+
+### DVD-T6 video deblurring
+
+Degraded input (left) and our restored result (right):
+
+![DVD-T6 video deblurring comparison](Visualization/dvd_t6_comparison.gif)
+
 ## Method
 
 The generator combines:
@@ -111,18 +125,6 @@ python scripts/metrics/calculate_video_metrics.py \
 ## Visualization
 
 ![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/github.png)
-
-### GoPro-TUD (T6) video deblurring
-
-Degraded input (left) and our restored result (right):
-
-![GoPro-TUD T6 video deblurring comparison](Visualization/gopro_tud_t6_comparison.gif)
-
-### DVD-T6 video deblurring
-
-Degraded input (left) and our restored result (right):
-
-![DVD-T6 video deblurring comparison](Visualization/dvd_t6_comparison.gif)
 
 ## Repository layout
 
