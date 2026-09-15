@@ -10,9 +10,10 @@ test options, data synthesis, and PSNR/SSIM evaluation.
 
 ### Adverse-weather restoration (rain, snow, and haze)
 
-Our restored result (left) and the degraded input (right):
+The vertical divider sweeps from left to right. The swept area shows our
+restored result, while the remaining area shows the degraded input.
 
-![Rain, snow, and haze restoration comparison](Visualization/weather_restoration_comparison.png)
+![Rain, snow, and haze restoration comparison](Visualization/weather_restoration_wipe.gif)
 
 ### GoPro-TUD (T6) video deblurring
 
