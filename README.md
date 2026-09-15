@@ -124,7 +124,16 @@ python scripts/metrics/calculate_video_metrics.py \
 
 ## Visualization
 
-![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/vis_github.jpg)
+<p align="center">
+  <a href="Visualization/vis_github.pdf">
+    <img src="Visualization/vis_github.png" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  Qualitative visualization results on different video restoration benchmarks.
+  Click the figure to view the high-resolution PDF.
+</p>
 
 ## Repository layout
 
