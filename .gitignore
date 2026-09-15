@@ -23,7 +23,7 @@ version.py
 *.gif
 !Visualization/gopro_tud_t6_comparison.gif
 !Visualization/dvd_t6_comparison.gif
-!Visualization/weather_restoration_wipe.gif
+!Visualization/weather_restoration_comparison.png
 *.pth
 *.zip
 
