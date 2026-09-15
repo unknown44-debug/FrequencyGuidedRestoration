@@ -124,7 +124,7 @@ python scripts/metrics/calculate_video_metrics.py \
 
 ## Visualization
 
-![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/vis_github.pdf)
+![Davis&set-8](https://github.com/unknown44-debug/FrequencyGuidedRestoration/blob/main/Visualization/vis_github.jpg)
 
 ## Repository layout
 
