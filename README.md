@@ -122,11 +122,12 @@ python scripts/metrics/calculate_video_metrics.py \
   --output-csv results/set8_metrics.csv
 ```
 
+
 ## Visualization
 
 <p align="center">
   <a href="Visualization/vis_github.pdf">
-    <img src="Visualization/vis_github.png" width="100%">
+    <img src="Visualization/vis_github.jpg" width="100%">
   </a>
 </p>
 
