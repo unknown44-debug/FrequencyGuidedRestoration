@@ -11,21 +11,22 @@ test options, data synthesis, and PSNR/SSIM evaluation.
 The vertical divider sweeps from left to right. The swept area shows our
 restored result, while the remaining area shows the degraded input.
 
-### Dehazing and desnowing
-
-![Dehazing and desnowing comparison](Visualization/dehaze_desnow_wipe_10f.gif)
+<table>
+  <tr>
+    <th>Dehazing and desnowing</th>
+    <th>Motion deblurring</th>
+    <th>Super-resolution</th>
+  </tr>
+  <tr>
+    <td><img src="Visualization/dehaze_desnow_wipe_10f.gif" alt="Dehazing and desnowing comparison" width="250"></td>
+    <td><img src="Visualization/motion_deblur_wipe_10f.gif" alt="Motion deblurring comparison" width="250"></td>
+    <td><img src="Visualization/super_resolution_wipe_10f.gif" alt="Super-resolution comparison" width="250"></td>
+  </tr>
+</table>
 
 ### Deraining
 
 ![Deraining comparison](Visualization/derain_wipe_10f.gif)
-
-### Motion deblurring
-
-![Motion deblurring comparison](Visualization/motion_deblur_wipe_10f.gif)
-
-### Super-resolution
-
-![Super-resolution comparison](Visualization/super_resolution_wipe_10f.gif)
 
 ## Method
 
