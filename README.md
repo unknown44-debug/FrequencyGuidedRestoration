@@ -8,24 +8,24 @@ test options, data synthesis, and PSNR/SSIM evaluation.
 
 ## Visual Results
 
-### Adverse-weather restoration (rain, snow, and haze)
-
 The vertical divider sweeps from left to right. The swept area shows our
 restored result, while the remaining area shows the degraded input.
 
-![Rain, snow, and haze restoration comparison](Visualization/weather_restoration_wipe.gif)
+### Dehazing and desnowing
 
-### GoPro-TUD (T6) video deblurring
+![Dehazing and desnowing comparison](Visualization/dehaze_desnow_wipe_10f.gif)
 
-Degraded input (left) and our restored result (right):
+### Deraining
 
-![GoPro-TUD T6 video deblurring comparison](Visualization/gopro_tud_t6_comparison.gif)
+![Deraining comparison](Visualization/derain_wipe_10f.gif)
 
-### DVD-T6 video deblurring
+### Motion deblurring
 
-Degraded input (left) and our restored result (right):
+![Motion deblurring comparison](Visualization/motion_deblur_wipe_10f.gif)
 
-![DVD-T6 video deblurring comparison](Visualization/dvd_t6_comparison.gif)
+### Super-resolution
+
+![Super-resolution comparison](Visualization/super_resolution_wipe_10f.gif)
 
 ## Method
 

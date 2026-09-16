@@ -24,6 +24,10 @@ version.py
 !Visualization/gopro_tud_t6_comparison.gif
 !Visualization/dvd_t6_comparison.gif
 !Visualization/weather_restoration_wipe.gif
+!Visualization/dehaze_desnow_wipe_10f.gif
+!Visualization/derain_wipe_10f.gif
+!Visualization/motion_deblur_wipe_10f.gif
+!Visualization/super_resolution_wipe_10f.gif
 *.pth
 *.zip
 
