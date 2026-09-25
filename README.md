@@ -28,6 +28,10 @@ restored result, while the remaining area shows the degraded input.
 
 ![Deraining comparison](Visualization/derain_wipe_10f.gif)
 
+### RVSD nighttime desnowing
+
+![RVSD nighttime desnowing comparison](Visualization/rvsd_night_desnow_wipe_10f.gif)
+
 ## Method
 
 The generator combines:

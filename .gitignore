@@ -28,6 +28,7 @@ version.py
 !Visualization/derain_wipe_10f.gif
 !Visualization/motion_deblur_wipe_10f.gif
 !Visualization/super_resolution_wipe_10f.gif
+!Visualization/rvsd_night_desnow_wipe_10f.gif
 *.pth
 *.zip
 
