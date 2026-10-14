@@ -32,8 +32,8 @@ restored result, while the remaining area shows the degraded input.
 
 <table>
   <tr>
-    <th>RVSD nighttime desnowing</th>
     <th>RVSD desnowing</th>
+    <th>RVSD nighttime desnowing</th>
   </tr>
   <tr>
     <td><img src="Visualization/RVSD.gif" alt="RVSD nighttime desnowing" width="375"></td>
