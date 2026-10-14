@@ -28,9 +28,18 @@ restored result, while the remaining area shows the degraded input.
 
 ![Deraining comparison](Visualization/derain_wipe_10f.gif)
 
-### RVSD nighttime desnowing
+### RVSD desnowing
 
-![RVSD nighttime desnowing comparison](Visualization/rvsd_night_desnow_wipe_10f.gif)
+<table>
+  <tr>
+    <th>RVSD nighttime desnowing</th>
+    <th>RVSD desnowing</th>
+  </tr>
+  <tr>
+    <td><img src="Visualization/RVSD.gif" alt="RVSD nighttime desnowing" width="375"></td>
+    <td><img src="Visualization/RVSD_night_desnow.gif" alt="RVSD desnowing" width="375"></td>
+  </tr>
+</table>
 
 ## Method
 
